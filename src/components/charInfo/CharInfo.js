@@ -1,6 +1,7 @@
 //@ts-check
 /* eslint-disable array-callback-return */
-import { useState, useEffect} from 'react';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
@@ -9,84 +10,83 @@ import useMarvelService from '../../services/MarvelService';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const CharInfo =(props)=> {
+const CharInfo = (props) => {
 
   const [char, setChar] = useState(null);
-  const {loading, error, getCharacter, clearError} = useMarvelService();
+  const { loading, error, getCharacter, clearError } = useMarvelService();
 
-  useEffect(() => { updateChar() }, [])
-  useEffect(() => { updateChar() }, [props])
-
-  const updateChar=()=>{
-    const {charId} = props;
-    if(!charId){return;}
+  useEffect(() => { updateChar() }, [props.charId])
+  
+  const updateChar = () => {
+    const { charId } = props;
+    if (!charId) { return; }
     clearError();
     getCharacter(charId)
-        .then(onCharLoaded)
+      .then(onCharLoaded)
   }
 
-  const onCharLoaded = (char) =>{
+  const onCharLoaded = (char) => {
     setChar(char);
   }
 
-    const spinner      = loading ? <Spinner/>      : null;
-    const errorMessage = error   ? <ErrorMessage/> : null;
-    const skeleton     = !( char || loading || error) ? <Skeleton/>         : null;
-    const content      = !(!char || loading || error) ? <View char={char}/> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const skeleton = !(char || loading || error) ? <Skeleton /> : null;
+  const content = !(!char || loading || error) ? <View char={char} /> : null;
 
-    return (
-        <div className="char__info">
-          {skeleton}
-          {errorMessage}
-          {spinner}
-          {content}
-        </div>
-    )
+  return (
+    <div className="char__info">
+      {skeleton}
+      {errorMessage}
+      {spinner}
+      {content}
+    </div>
+  )
 
 }
 
-const View=({char})=>{
-  const {name, description,thumbnail,homepage,wiki,comics} = char
+const View = ({ char }) => {
+  const { name, description, thumbnail, homepage, wiki, comics } = char
   let comicsList;
-  if(!comics[0]){ comicsList = <span>Информация о комиксах отсутствует</span> }
-  if( comics[0]){
-    comicsList = comics.map((item, i) =>{
-      if( i > 9) return
-      return(
+  if (!comics[0]) { comicsList = <span>Информация о комиксах отсутствует</span> }
+  if (comics[0]) {
+    comicsList = comics.map((item, i) => {
+      if (i > 9) return
+      return (
         <li key={i} className="char__comics-item">
           {item.name}
         </li>
       )
     })
   }
-  
-  let imgStyle = {'objectFit' : 'cover'};
-  if(thumbnail.includes('image_not_available')){ (imgStyle = {'objectFit' : 'unset'}) }
-  
-  return(
+
+  let imgStyle = { 'objectFit': 'cover' };
+  if (thumbnail.includes('image_not_available')) { (imgStyle = { 'objectFit': 'unset' }) }
+
+  return (
     <>
       <div className="char__basics">
-          <img src={thumbnail} alt={name} 
-// @ts-ignore
-          style={imgStyle}/>
-          <div>
-              <div className="char__info-name">{name}</div>
-              <div className="char__btns">
-                  <a href={homepage} className="button button__main">
-                      <div className="inner">homepage</div>
-                  </a>
-                  <a href={wiki} className="button button__secondary">
-                      <div className="inner">Wiki</div>
-                  </a>
-              </div>
+        <img src={thumbnail} alt={name}
+          // @ts-ignore
+          style={imgStyle} />
+        <div>
+          <div className="char__info-name">{name}</div>
+          <div className="char__btns">
+            <a href={homepage} className="button button__main">
+              <div className="inner">homepage</div>
+            </a>
+            <a href={wiki} className="button button__secondary">
+              <div className="inner">Wiki</div>
+            </a>
           </div>
+        </div>
       </div>
       <div className="char__descr">
-          {description}
+        {description}
       </div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-          {comicsList}
+        {comicsList}
       </ul>
     </>
   )
