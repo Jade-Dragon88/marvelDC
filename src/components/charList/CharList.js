@@ -24,7 +24,7 @@ const CharList =(props)=> {
     .then(onCharListLoaded)
   }
 
-  const onCharListLoaded = (/** @type {any} */ newCharList) => {
+  const onCharListLoaded = async (/** @type {any} */ newCharList) => {
     
     let ended = false;
     if(newCharList.length<9){ended = true}
