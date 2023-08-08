@@ -2,13 +2,13 @@
 
 export const useHttp =()=>{
 
-  const [error, setError]     = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [process, setProcess] = useState('waiting');
+  
 
   const request = useCallback(
     async (url,method = 'GET',body=null,headers={'Content-Type': 'application/json'})=>{
 
-      setLoading(true);
+      setProcess('loading')
       
       try {
         const response = await fetch(url,{method,body,headers});
@@ -16,19 +16,19 @@ export const useHttp =()=>{
           throw new Error(`Не возможно обратиться по адресу ${url}, status: ${response.status}`)
         }
         const data = await response.json();
-        setLoading(false);
         return data;
       } catch (error) {
-        setLoading(false);
-        setError(error.message);
+        setProcess('error')
         throw error;
       }
 
     },[]
   );
 
-  const clearError = useCallback(() => setError(null),[]);
+  const clearError = useCallback(() => {
+    setProcess('loading')
+  },[]);
 
-  return {loading, request, error, clearError}
+  return {request, clearError, process, setProcess}
   
 }

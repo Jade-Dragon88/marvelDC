@@ -2,18 +2,16 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import Skeleton from '../skeleton/Skeleton';
+import setContent from '../../utils/setContent';
 import './charInfo.scss';
 import useMarvelService from '../../services/MarvelService';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const CharInfo = (props) => {
+const CharInfo =  (props) => {
 
   const [char, setChar] = useState(null);
-  const { loading, error, getCharacter, clearError } = useMarvelService();
+  const {getCharacter, clearError,process,setProcess } = useMarvelService();
 
   useEffect(() => { updateChar() }, [props.charId])
   
@@ -23,30 +21,23 @@ const CharInfo = (props) => {
     clearError();
     getCharacter(charId)
       .then(onCharLoaded)
+      .then(()=>setProcess('confirmed'))
   }
 
   const onCharLoaded = (char) => {
     setChar(char);
   }
 
-  const spinner = loading ? <Spinner /> : null;
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const skeleton = !(char || loading || error) ? <Skeleton /> : null;
-  const content = !(!char || loading || error) ? <View char={char} /> : null;
-
   return (
     <div className="char__info">
-      {skeleton}
-      {errorMessage}
-      {spinner}
-      {content}
+      {setContent(process, View, char)}
     </div>
   )
 
 }
 
-const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki, comics } = char
+const View = ({ data }) => {
+  const { name, description, thumbnail, homepage, wiki, comics } = data
   let comicsList;
   if (!comics[0]) { comicsList = <span>Информация о комиксах отсутствует</span> }
   if (comics[0]) {

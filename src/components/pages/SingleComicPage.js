@@ -1,16 +1,17 @@
-//@ts-check
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './singleComicPage.scss';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 
 
 const SingleComicPage = () => {
     const {comicId} = useParams();
-    const {comic, setComic} = useState(null);
-    const { loading, error, getComic, clearError } = useMarvelService();
+    const {comic, setComic} = useState();
+    const { loading, error, getComic, clearError,process,setProcess } = useMarvelService();
     
     useEffect(() => { updateComic() }, [comicId])
   
@@ -21,6 +22,7 @@ const SingleComicPage = () => {
       clearError();
       getComic(comicId)
         .then(onComicLoaded)
+        // .then(()=>setProcess('confirmed'));
     }
 
     const spinner = loading ? <Spinner /> : null;
@@ -33,6 +35,7 @@ const SingleComicPage = () => {
         {errorMessage}
         {spinner}
         {content}
+        {/* {setContent(process,View,comic)} */}
       </>
     )
     
